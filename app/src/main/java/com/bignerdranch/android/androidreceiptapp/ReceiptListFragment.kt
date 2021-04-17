@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -63,6 +64,7 @@ class ReceiptListFragment : Fragment() {
         private val titleTextView: TextView = itemView.findViewById(R.id.receipt_title)
         private val dateTextView: TextView = itemView.findViewById(R.id.receipt_date)
         private val totalTextView: TextView = itemView.findViewById(R.id.receipt_total)
+        private val imageView: ImageView = itemView.findViewById(R.id.store_image)
 
         init {
             itemView.setOnClickListener(this)
