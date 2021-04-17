@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.Observer
 import java.util.*
 
 private const val TAG = "ReceiptListFragment"
@@ -19,15 +20,10 @@ private const val TAG = "ReceiptListFragment"
 class ReceiptListFragment : Fragment() {
 
     private lateinit var receiptRecyclerView: RecyclerView
-    private var adapter: ReceiptAdapter? = null
+    private var adapter: ReceiptAdapter? = ReceiptAdapter(emptyList())
 
     private val receiptListViewModel: ReceiptListViewModel by lazy {
         ViewModelProviders.of(this).get(ReceiptListViewModel::class.java)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "Total receipts: ${receiptListViewModel.receipts.size}")
     }
 
     override fun onCreateView(
@@ -40,14 +36,24 @@ class ReceiptListFragment : Fragment() {
         receiptRecyclerView =
             view.findViewById(R.id.receipt_recycler_view) as RecyclerView
         receiptRecyclerView.layoutManager = LinearLayoutManager(context)
-
-        updateUI()
+        receiptRecyclerView.adapter = adapter
 
         return view
     }
 
-    private fun updateUI() {
-        val receipts = receiptListViewModel.receipts
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        receiptListViewModel.receiptListLiveData.observe(
+            viewLifecycleOwner,
+            Observer { receipts ->
+                receipts?.let {
+                    Log.i(TAG, "Got receipts ${receipts.size}")
+                    updateUI(receipts)
+                }
+            })
+    }
+
+    private fun updateUI(receipts: List<Receipt>) {
         adapter = ReceiptAdapter(receipts)
         receiptRecyclerView.adapter = adapter
     }
