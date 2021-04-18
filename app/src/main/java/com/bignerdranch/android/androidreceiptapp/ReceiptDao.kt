@@ -2,7 +2,9 @@ package com.bignerdranch.android.androidreceiptapp
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import java.util.*
 
 @Dao
@@ -15,4 +17,16 @@ interface ReceiptDao {
 
     @Query("SELECT * FROM receiptentry WHERE ReceiptID=(:id)")
     fun getEntries(id: UUID): LiveData<List<ReceiptEntry>>
+
+    @Update
+    fun updateReceipt(receipt: Receipt)
+
+    @Update
+    fun updateEntry(entry: ReceiptEntry)
+
+    @Insert
+    fun addReceipt(receipt: Receipt)
+
+    @Insert
+    fun addEntry(entry: ReceiptEntry)
 }
