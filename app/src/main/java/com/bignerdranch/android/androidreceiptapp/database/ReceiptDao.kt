@@ -1,10 +1,12 @@
-package com.bignerdranch.android.androidreceiptapp
+package com.bignerdranch.android.androidreceiptapp.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.bignerdranch.android.androidreceiptapp.Receipt
+import com.bignerdranch.android.androidreceiptapp.ReceiptEntry
 import java.util.*
 
 @Dao

@@ -1,4 +1,4 @@
-package com.bignerdranch.android.androidreceiptapp
+package com.bignerdranch.android.androidreceiptapp.database
 
 import androidx.room.TypeConverter
 import java.util.*

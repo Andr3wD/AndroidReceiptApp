@@ -3,6 +3,7 @@ package com.bignerdranch.android.androidreceiptapp
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
+import com.bignerdranch.android.androidreceiptapp.database.ReceiptDatabase
 import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.Executors
