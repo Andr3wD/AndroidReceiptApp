@@ -3,4 +3,5 @@
     <string name="receipt_nickname_label">Nickname for receipt entry</string>
     <string name="receipt_date_label">Date of purchase</string>
     <string name="store_name_label">Store Name</string>
+    <string name="new_receipt">New Receipt</string>
 </resources>
