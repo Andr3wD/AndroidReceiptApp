@@ -62,7 +62,7 @@ class ReceiptRepository private constructor(context: Context) {
 
         fun get(): ReceiptRepository {
             return INSTANCE ?:
-            throw IllegalStateException("CrimeRepository must be initialized")
+            throw IllegalStateException("ReceiptRepository must be initialized")
         }
     }
 }
