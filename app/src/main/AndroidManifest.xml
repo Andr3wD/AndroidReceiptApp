@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bignerdranch.android.androidreceiptapp">
 
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true" />
+
+    <!--Ugh, old permission is required. Docs say only hardware.camera feature required, but this version requires full Camera permission.-->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+
     <application
         android:name=".ReceiptApplication"
         android:allowBackup="true"
@@ -29,7 +36,6 @@
         </provider>
     </application>
 
-    <uses-feature android:name="android.hardware.camera"
-        android:required="true" />
+
 
 </manifest>
