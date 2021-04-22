@@ -87,7 +87,7 @@ class ReceiptEntryListFragment : Fragment() {
 
         override fun getItemCount() = entries.size
 
-        override fun onBindViewHolder(holder:EntryHolder, position: Int) {
+        override fun onBindViewHolder(holder: EntryHolder, position: Int) {
             val entry = entries[position]
             holder.bind(entry)
         }
