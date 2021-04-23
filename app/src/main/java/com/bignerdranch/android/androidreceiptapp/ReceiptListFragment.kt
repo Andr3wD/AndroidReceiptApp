@@ -1,6 +1,6 @@
 package com.bignerdranch.android.androidreceiptapp
 
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -8,11 +8,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.lifecycle.Observer
 import java.util.*
+
 
 private const val TAG = "ReceiptListFragment"
 
@@ -86,19 +87,20 @@ class ReceiptListFragment : Fragment() {
         inflater.inflate(R.menu.fragment_receipt_list, menu)
     }
 
-    /*
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.new_receipt -> {
-                val receipt = Receipt()
-                receiptListViewModel.addReceipt(receipt)
-                callbacks?.onReceiptSelected((receipt.ReceiptID))
-                true
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
+//        return when (item.itemId) {
+//            R.id.new_receipt -> {
+//                val receipt = Receipt()
+//                receiptListViewModel.addReceipt(receipt)
+//                callbacks?.onReceiptSelected((receipt.ReceiptID))
+//                true
+//            }
+//            else -> return super.onOptionsItemSelected(item)
+        val fragment = ReceiptDataEntryActivity.newInstance()
+        activity?.supportFragmentManager?.beginTransaction()
+            ?.add(R.id.fragment_container,fragment)?.commit()
+        return true
     }
-    */
     private fun updateUI(receipts: List<Receipt>) {
         adapter = ReceiptAdapter(receipts)
         receiptRecyclerView.adapter = adapter
