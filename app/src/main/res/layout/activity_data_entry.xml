@@ -38,13 +38,13 @@
         android:id="@+id/btnDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Wed Nov 14 11:56 EST 2018" />
+        android:text="Wed Nov 14 11:56 EST 2018" />
 
     <Button
         android:id="@+id/btnSaveEntry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Save entry" />
+        android:text="Save entry" />
 
     <ImageView
         android:id="@+id/imageView"
