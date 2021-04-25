@@ -23,4 +23,18 @@ class ReceiptDetailViewModel : ViewModel() {
     fun loadReceipt(receiptId: UUID) {
         receiptIdLiveData.value = receiptId
     }
+
+    /*
+    fun saveReceipt(receipt: Receipt) {
+        receiptRepository.updateReceipt(receipt)
+    }
+
+    fun saveEntry(entry: ReceiptEntry) {
+        receiptRepository.updateEntry(entry)
+    }
+
+    fun loadEntry(entryId: UUID) {
+        receiptIdLiveData.value = receiptId
+    }
+    */
 }
