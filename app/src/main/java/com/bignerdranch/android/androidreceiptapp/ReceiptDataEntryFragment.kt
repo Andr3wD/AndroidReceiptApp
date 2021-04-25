@@ -54,13 +54,13 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_data_entry, container, false)
 
-        nickNameET = view.findViewById(R.id.etNickname) as EditText
-        storeNameET = view.findViewById(R.id.etStoreName) as EditText
-        dateButton = view.findViewById(R.id.btnDate) as Button
+        nickNameET = view.findViewById(R.id.receipt_nickname) as EditText
+        storeNameET = view.findViewById(R.id.receipt_store_name) as EditText
+        dateButton = view.findViewById(R.id.receipt_date) as Button
         dateButton.setText(Date().toString())
         purchaseDate = Date()
 
-        saveEntryButton = view.findViewById(R.id.btnSaveEntry) as Button
+        saveEntryButton = view.findViewById(R.id.receipt_save) as Button
         cameraButton = view.findViewById(R.id.receipt_camera) as ImageButton
         cameraImageDisplay = view.findViewById(R.id.receipt_camera_image)
         cameraImageDisplay.setDrawingCacheEnabled(true)
