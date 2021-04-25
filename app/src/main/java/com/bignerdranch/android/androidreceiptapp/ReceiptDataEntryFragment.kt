@@ -23,11 +23,10 @@ import androidx.fragment.app.Fragment
 import org.opencv.android.Utils
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
-import java.lang.Float.max
 import java.lang.Math.abs
 import java.nio.ByteBuffer
 
-class ReceiptDataEntryActivity : Fragment() {
+class ReceiptDataEntryFragment : Fragment() {
 
     private lateinit var cameraButton: ImageButton
     private lateinit var cameraImageDisplay: ImageView
@@ -243,8 +242,8 @@ class ReceiptDataEntryActivity : Fragment() {
     }
 
     companion object {
-        fun newInstance(): ReceiptDataEntryActivity {
-            return ReceiptDataEntryActivity()
+        fun newInstance(): ReceiptDataEntryFragment {
+            return ReceiptDataEntryFragment()
         }
     }
 
