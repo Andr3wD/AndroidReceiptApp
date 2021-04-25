@@ -132,8 +132,8 @@ class ReceiptListFragment : Fragment() {
         }
 
         override fun onClick(v: View) {
-            Toast.makeText(context, "${receipt.Title} pressed!", Toast.LENGTH_SHORT)
-                .show()
+//            val receiptID = receipt.ReceiptID
+//            val intent = ReceiptDetailActivity.newIntent(this, receiptID.toString())
         }
     }
 

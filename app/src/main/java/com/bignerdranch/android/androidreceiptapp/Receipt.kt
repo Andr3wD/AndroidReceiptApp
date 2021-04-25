@@ -6,8 +6,8 @@ import java.util.*
 
 @Entity
 data class Receipt (@PrimaryKey var ReceiptID: UUID = UUID.randomUUID(),
-                    var Title: String = "Test Title",
-                    var Date : Date = Date(),
-                    var TotalSpent: Double = 0.0,
-                    var Store: String = "Test Store"
+                    var Title: String,
+                    var Date : Date,
+                    var TotalSpent: Double,
+                    var Store: String
 )
