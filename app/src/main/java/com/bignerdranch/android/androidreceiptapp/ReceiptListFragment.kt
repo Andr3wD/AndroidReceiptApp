@@ -1,12 +1,10 @@
 package com.bignerdranch.android.androidreceiptapp
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -96,7 +94,7 @@ class ReceiptListFragment : Fragment() {
 //                true
 //            }
 //            else -> return super.onOptionsItemSelected(item)
-        val fragment = ReceiptDataEntryActivity.newInstance()
+        val fragment = ReceiptDataEntryFragment.newInstance()
         activity?.supportFragmentManager?.beginTransaction()
             ?.add(R.id.fragment_container,fragment)?.commit()
         return true
@@ -132,8 +130,8 @@ class ReceiptListFragment : Fragment() {
         }
 
         override fun onClick(v: View) {
-            Toast.makeText(context, "${receipt.Title} pressed!", Toast.LENGTH_SHORT)
-                .show()
+//            val receiptID = receipt.ReceiptID
+//            val intent = ReceiptDetailActivity.newIntent(this, receiptID.toString())
         }
     }
 
