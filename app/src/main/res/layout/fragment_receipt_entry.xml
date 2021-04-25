@@ -10,10 +10,10 @@
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/receipt_nickname_label" />
+        android:text="@string/receipt_entry_name_label" />
 
     <EditText
-        android:id="@+id/receipt_nickname"
+        android:id="@+id/receipt_entry_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -21,10 +21,10 @@
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/store_name_label" />
+        android:text="@string/receipt_category_label" />
 
     <EditText
-        android:id="@+id/receipt_store_name"
+        android:id="@+id/receipt_entry_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -32,45 +32,27 @@
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/total_spent_label" />
+        android:text="@string/receipt_price_label" />
 
     <EditText
-        android:id="@+id/receipt_total_spent"
+        android:id="@+id/receipt_entry_price"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TextView
-        style="?android:listSeparatorTextViewStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/receipt_date_label" />
-
+    <!--
+    We don't really need a button since
+    users can just press the back button
+    like in Criminal Intent.
     <Button
-        android:id="@+id/receipt_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Wed Nov 14 11:56 EST 2018" />
-
-    <Button
-        android:id="@+id/receipt_save"
+        android:id="@+id/receipt_entry_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Save entry" />
+     -->
 
+    <!-- Image of receipt here? -->
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/btn_dialog" />
-
-    <ImageButton
-        android:id="@+id/receipt_camera"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_camera" />
-
-    <ImageView
-        android:id="@+id/receipt_camera_image"
+        android:id="@+id/receipt_entry_camera_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
