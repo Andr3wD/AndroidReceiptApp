@@ -16,6 +16,8 @@ import android.view.LayoutInflater
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
@@ -25,21 +27,41 @@ import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import java.lang.Math.abs
 import java.nio.ByteBuffer
+import java.time.Instant.now
+import java.time.LocalDate.now
+import java.time.LocalDateTime
+import java.util.*
+import kotlin.collections.ArrayList
 
-class ReceiptDataEntryFragment : Fragment() {
+private const val DIALOG_DATE = "DialogDate"
+private const val REQUEST_DATE = 0
+
+class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
 
     private lateinit var cameraButton: ImageButton
     private lateinit var cameraImageDisplay: ImageView
+    private lateinit var saveEntryButton: Button
+    private lateinit var nickNameET: EditText
+    private lateinit var storeNameET: EditText
+    private lateinit var dateButton: Button
+    private lateinit var purchaseDate: Date
+
     lateinit var camManager: CameraManager
     lateinit var imgReader: ImageReader
     var takeImage: Boolean = false
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.activity_data_entry, container, false)
+        val view = inflater.inflate(R.layout.fragment_data_entry, container, false)
 
+        nickNameET = view.findViewById(R.id.etNickname) as EditText
+        storeNameET = view.findViewById(R.id.etStoreName) as EditText
+        dateButton = view.findViewById(R.id.btnDate) as Button
+        dateButton.setText(Date().toString())
+        purchaseDate = Date()
 
-        cameraButton = view.findViewById(R.id.receipt_camera)
+        saveEntryButton = view.findViewById(R.id.btnSaveEntry) as Button
+        cameraButton = view.findViewById(R.id.receipt_camera) as ImageButton
         cameraImageDisplay = view.findViewById(R.id.receipt_camera_image)
         cameraImageDisplay.setDrawingCacheEnabled(true)
         cameraImageDisplay.rotation = 90F
@@ -59,7 +81,8 @@ class ReceiptDataEntryFragment : Fragment() {
                 val contourBit = getContours(bit) // Get a bitmap with the contours applied to it.
                 cameraImageDisplay.setImageBitmap(contourBit)
             }
-            latestImage.close() // Close the image so the ImageReader buffer doesn't get full.
+            if (latestImage != null)
+                latestImage.close() // Close the image so the ImageReader buffer doesn't get full.
         }, null)
 
         cameraImageDisplay.setOnClickListener {
@@ -70,6 +93,24 @@ class ReceiptDataEntryFragment : Fragment() {
         makeCameraStuff(imgReader.surface)
 
         return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        dateButton.setOnClickListener {
+            var date = Date()
+            DatePickerFragment.newInstance(date = date).apply {
+                setTargetFragment(this@ReceiptDataEntryFragment, REQUEST_DATE)
+                show(this@ReceiptDataEntryFragment.requireFragmentManager(), DIALOG_DATE)
+            }
+        }
+    }
+
+    override fun onDateSelected(date: Date) {
+        dateButton.setText(date.toString())
+        purchaseDate = date
+
     }
 
     private fun makeCameraStuff(surf: Surface) {

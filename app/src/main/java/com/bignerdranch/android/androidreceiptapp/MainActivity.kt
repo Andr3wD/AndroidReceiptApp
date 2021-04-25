@@ -30,9 +30,6 @@ class MainActivity : AppCompatActivity() {
             Log.d("OpenCv", "OpenCV loaded")
         }
 
-
-
-
         val currentFragment =
             supportFragmentManager.findFragmentById(R.id.fragment_container)
 
