@@ -9,7 +9,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.opencv.android.OpenCVLoader
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ReceiptDataEntryFragment.Callbacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -40,5 +40,14 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.fragment_container, fragment)
                 .commit()
         }
+    }
+
+    override fun onCameraSelected() {
+        val fragment = ReceiptDataEntryCameraFragment.newInstance()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack("camera-fragment")
+            .commit()
     }
 }
