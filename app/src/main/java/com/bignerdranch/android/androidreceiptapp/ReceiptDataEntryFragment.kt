@@ -16,6 +16,8 @@ import android.view.LayoutInflater
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
@@ -25,26 +27,45 @@ import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import java.lang.Math.abs
 import java.nio.ByteBuffer
+import java.time.Instant.now
+import java.time.LocalDate.now
+import java.time.LocalDateTime
+import java.util.*
+import kotlin.collections.ArrayList
 
-class ReceiptDataEntryFragment : Fragment() {
+private const val DIALOG_DATE = "DialogDate"
+private const val REQUEST_DATE = 0
+
+class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
 
     private lateinit var cameraButton: ImageButton
     private lateinit var cameraImageDisplay: ImageView
+    private lateinit var saveEntryButton: Button
+    private lateinit var nickNameET: EditText
+    private lateinit var storeNameET: EditText
+    private lateinit var dateButton: Button
+    private lateinit var purchaseDate: Date
+
     lateinit var camManager: CameraManager
     lateinit var imgReader: ImageReader
     var takeImage: Boolean = false
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.activity_data_entry, container, false)
+        val view = inflater.inflate(R.layout.fragment_data_entry, container, false)
 
+        nickNameET = view.findViewById(R.id.receipt_nickname) as EditText
+        storeNameET = view.findViewById(R.id.receipt_store_name) as EditText
+        dateButton = view.findViewById(R.id.receipt_date) as Button
+        dateButton.setText(Date().toString())
+        purchaseDate = Date()
 
-        cameraButton = view.findViewById(R.id.receipt_camera)
+        saveEntryButton = view.findViewById(R.id.receipt_save) as Button
+        cameraButton = view.findViewById(R.id.receipt_camera) as ImageButton
         cameraImageDisplay = view.findViewById(R.id.receipt_camera_image)
         cameraImageDisplay.setDrawingCacheEnabled(true)
         cameraImageDisplay.rotation = 90F
         // Using JPEG instead of YUV_420_888 because https://stackoverflow.com/questions/28430024/convert-android-media-image-yuv-420-888-to-bitmap?answertab=votes#tab-top. Faster and easier.
-        imgReader = ImageReader.newInstance(500,500,ImageFormat.JPEG, 10)
+        imgReader = ImageReader.newInstance(500, 500, ImageFormat.JPEG, 10)
         imgReader.setOnImageAvailableListener({
 
             // Thanks to https://stackoverflow.com/questions/26673127/android-imagereader-acquirelatestimage-returns-invalid-jpg
@@ -59,7 +80,8 @@ class ReceiptDataEntryFragment : Fragment() {
                 val contourBit = getContours(bit) // Get a bitmap with the contours applied to it.
                 cameraImageDisplay.setImageBitmap(contourBit)
             }
-            latestImage.close() // Close the image so the ImageReader buffer doesn't get full.
+            if (latestImage != null)
+                latestImage.close() // Close the image so the ImageReader buffer doesn't get full.
         }, null)
 
         cameraImageDisplay.setOnClickListener {
@@ -68,15 +90,36 @@ class ReceiptDataEntryFragment : Fragment() {
 
         // Make a camera2 camera attached to the ImageReader surface
         makeCameraStuff(imgReader.surface)
-
         return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        dateButton.setOnClickListener {
+            var date = Date()
+            DatePickerFragment.newInstance(date = date).apply {
+                setTargetFragment(this@ReceiptDataEntryFragment, REQUEST_DATE)
+                show(this@ReceiptDataEntryFragment.requireFragmentManager(), DIALOG_DATE)
+            }
+        }
+    }
+
+    override fun onDateSelected(date: Date) {
+        dateButton.setText(date.toString())
+        purchaseDate = date
+
     }
 
     private fun makeCameraStuff(surf: Surface) {
         // https://medium.com/androiddevelopers/understanding-android-camera-capture-sessions-and-requests-4e54d9150295
         camManager = context?.getSystemService(Context.CAMERA_SERVICE) as CameraManager
 
-        if (ActivityCompat.checkSelfPermission(context!!, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -89,37 +132,38 @@ class ReceiptDataEntryFragment : Fragment() {
         }
 
 
-        camManager.openCamera(camManager.cameraIdList[0], object: CameraDevice.StateCallback() {
+        camManager.openCamera(camManager.cameraIdList[0], object : CameraDevice.StateCallback() {
             override fun onOpened(camera: CameraDevice) {
-                Log.d("test","CAMERA OPEN")
+                Log.d("test", "CAMERA OPEN")
                 var targets: MutableList<Surface> = arrayOf(surf).toMutableList()
 
                 // Deprecated, but next 'available' is version 28, so...
                 // Create a capture session
-                camera.createCaptureSession(targets, object: CameraCaptureSession.StateCallback() {
+                camera.createCaptureSession(targets, object : CameraCaptureSession.StateCallback() {
                     override fun onConfigured(session: CameraCaptureSession) {
                         // Create a request for capture
-                        val capture = session.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+                        val capture =
+                            session.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
                         capture.addTarget(surf)
 
                         // Make the request repeat
                         session.setRepeatingRequest(capture.build(), null, null)
-                        Log.d("test","CAMERA CONFIG SUCCESSFUL")
+                        Log.d("test", "CAMERA CONFIG SUCCESSFUL")
                     }
 
                     override fun onConfigureFailed(session: CameraCaptureSession) {
-                        Log.e("test","CAMERA CONFIG FAILED")
+                        Log.e("test", "CAMERA CONFIG FAILED")
                     }
 
                 }, null)
             }
 
             override fun onDisconnected(camera: CameraDevice) {
-                Log.d("test","CAMERA DISCONNECT")
+                Log.d("test", "CAMERA DISCONNECT")
             }
 
             override fun onError(camera: CameraDevice, error: Int) {
-                Log.e("test","CAMERA ERR")
+                Log.e("test", "CAMERA ERR")
             }
 
         }, null)
@@ -144,12 +188,19 @@ class ReceiptDataEntryFragment : Fragment() {
         // Blur the image
         Imgproc.GaussianBlur(testGreyMat, testGreyGaussianMat, Size(5.0, 5.0), 0.0)
         // Apply edge detection
-        Imgproc.Canny(testGreyGaussianMat, testGreyGaussianEdgeMat, 75.0, 75.0*3)
+        Imgproc.Canny(testGreyGaussianMat, testGreyGaussianEdgeMat, 75.0, 75.0 * 3)
 
-        var matPointList: MutableList<MatOfPoint> = ArrayList() // The points that will be found by the findContours() method
+        var matPointList: MutableList<MatOfPoint> =
+            ArrayList() // The points that will be found by the findContours() method
         var contourHierarchyMat = Mat() // No clue what this does.
         // See https://docs.opencv.org/3.4/d4/d73/tutorial_py_contours_begin.html
-        Imgproc.findContours(testGreyGaussianEdgeMat, matPointList, contourHierarchyMat, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE)
+        Imgproc.findContours(
+            testGreyGaussianEdgeMat,
+            matPointList,
+            contourHierarchyMat,
+            Imgproc.RETR_EXTERNAL,
+            Imgproc.CHAIN_APPROX_SIMPLE
+        )
 
         // Convert to MatOfPoint2f https://stackoverflow.com/questions/11273588/how-to-convert-matofpoint-to-matofpoint2f-in-opencv-java-api
         // Convert to MatOfPoint2f for some reason
@@ -175,7 +226,10 @@ class ReceiptDataEntryFragment : Fragment() {
                 val d = MatOfPoint()
                 ap.convertTo(d, CvType.CV_32S) // Convert back to CvType.CV_32S from CvType.CV_32F
                 singlePointList.add(d)
-                testMat = cropWithContour(testMat, d) //This is what I'm having problems with, the actual cropping.
+                testMat = cropWithContour(
+                    testMat,
+                    d
+                ) //This is what I'm having problems with, the actual cropping.
                 break
             }
         }
@@ -188,7 +242,8 @@ class ReceiptDataEntryFragment : Fragment() {
 
             // Convert the original image Mat to a BitMap
             // WARN new bitmap width and height MUST MATCH the Mat's width and height that's being converted from
-            var testBit: Bitmap = Bitmap.createBitmap(testMat.width(), testMat.height(), imageBitmap.config)
+            var testBit: Bitmap =
+                Bitmap.createBitmap(testMat.width(), testMat.height(), imageBitmap.config)
             Utils.matToBitmap(testMat, testBit)
 
             return testBit
@@ -209,9 +264,7 @@ class ReceiptDataEntryFragment : Fragment() {
         // https://laptrinhx.com/4-point-opencv-getperspective-transform-example-4048720482/
         // https://medium.com/analytics-vidhya/opencv-perspective-transformation-9edffefb2143
 
-
-
-        val sP = matPoint.toArray().sortedWith(compareBy({it.x}, {it.y}))
+        val sP = matPoint.toArray().sortedWith(compareBy({ it.x }, { it.y }))
 
         // Before the 90* imageView rotation:
         // TopR = sP[0].x, sP[0].y
@@ -220,24 +273,37 @@ class ReceiptDataEntryFragment : Fragment() {
         // BottomL = sP[3].x, sP[3].y
 
         val transformFrom: Mat = Mat(4, 1, CvType.CV_32FC2)
-        transformFrom.put(0,0, sP[0].x, sP[0].y, sP[1].x, sP[1].y, sP[2].x, sP[2].y, sP[3].x, sP[3].y)
-        val maxWidth = kotlin.math.max(abs(sP[0].y-sP[2].x),abs(sP[1].x-sP[3].x))
-        val maxHeight = kotlin.math.max(abs(sP[0].y-sP[1].y),abs(sP[2].y-sP[3].y))
+        transformFrom.put(
+            0,
+            0,
+            sP[0].x,
+            sP[0].y,
+            sP[1].x,
+            sP[1].y,
+            sP[2].x,
+            sP[2].y,
+            sP[3].x,
+            sP[3].y
+        )
+        val maxWidth = kotlin.math.max(abs(sP[0].y - sP[2].x), abs(sP[1].x - sP[3].x))
+        val maxHeight = kotlin.math.max(abs(sP[0].y - sP[1].y), abs(sP[2].y - sP[3].y))
 
-        val transformTo: Mat = Mat(4,1, CvType.CV_32FC2)
+        val transformTo: Mat = Mat(4, 1, CvType.CV_32FC2)
         //transformTo.put(0, 0, 0.0, 0.0, 0.0, 400.0, 400.0, 0.0, 400.0, 400.0)
         transformTo.put(0, 0, 0.0, 0.0, 0.0, maxHeight, maxWidth, 0.0, maxWidth, maxHeight)
-        // vXxY vX
 
-        // vX^Y vXvY
-        // ^X^Y ^XvY
-        for (x in matPoint.toArray()) {// Testing.
-            Imgproc.circle(mat, x, 3, Scalar(0.0, 255.0, 0.0), 3)
-            Imgproc.putText(mat, "${x.x}, ${x.y}, ", x, Imgproc.FONT_HERSHEY_SIMPLEX, 1.0, Scalar(0.0, 255.0, 255.0))
-        }
+//        for (x in matPoint.toArray()) {// Testing.
+//            Imgproc.circle(mat, x, 3, Scalar(0.0, 255.0, 0.0), 3)
+//            Imgproc.putText(mat, "${x.x}, ${x.y}, ", x, Imgproc.FONT_HERSHEY_SIMPLEX, 1.0, Scalar(0.0, 255.0, 255.0))
+//        }
         val transform = Imgproc.getPerspectiveTransform(transformFrom, transformTo)
-        val newMat: Mat = Mat(4, 1, CvType.CV_32S)
-        Imgproc.warpPerspective(mat, newMat, transform, Size(maxWidth,maxHeight)) // TODO change size to actual image display size (imageView size).
+        val newMat = Mat(4, 1, CvType.CV_32S)
+        Imgproc.warpPerspective(
+            mat,
+            newMat,
+            transform,
+            Size(maxWidth, maxHeight)
+        ) // TODO change size to actual image display size (imageView size).
         return newMat
     }
 
