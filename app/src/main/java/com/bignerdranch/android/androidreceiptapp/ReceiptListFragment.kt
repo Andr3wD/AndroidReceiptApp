@@ -34,6 +34,9 @@ class ReceiptListFragment : Fragment() {
     private val receiptListViewModel: ReceiptListViewModel by lazy {
         ViewModelProviders.of(this).get(ReceiptListViewModel::class.java)
     }
+    private val receiptDetailViewModel: ReceiptDetailViewModel by lazy {
+        ViewModelProviders.of(this).get(ReceiptDetailViewModel::class.java)
+    }
 
     /*
     override fun onAttach(context: Context) {
@@ -130,8 +133,9 @@ class ReceiptListFragment : Fragment() {
         }
 
         override fun onClick(v: View) {
-//            val receiptID = receipt.ReceiptID
-//            val intent = ReceiptDetailActivity.newIntent(this, receiptID.toString())
+            // Toast.makeText(context, "${receipt.Title} pressed!", Toast.LENGTH_SHORT).show()
+            receiptDetailViewModel.loadReceipt(receipt.ReceiptID)
+            // TODO: Swap out the fragment
         }
     }
 

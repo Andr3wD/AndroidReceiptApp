@@ -1,10 +1,13 @@
 package com.bignerdranch.android.androidreceiptapp
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import java.util.*
+
+private const val TAG = "ReceiptDetailViewModel"
 
 class ReceiptDetailViewModel : ViewModel() {
 
@@ -21,6 +24,7 @@ class ReceiptDetailViewModel : ViewModel() {
             }
 
     fun loadReceipt(receiptId: UUID) {
+        Log.i(TAG, "Loaded ReceiptID")
         receiptIdLiveData.value = receiptId
     }
 
