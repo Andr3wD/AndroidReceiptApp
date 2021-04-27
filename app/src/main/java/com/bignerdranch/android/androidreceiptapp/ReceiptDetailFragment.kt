@@ -16,7 +16,7 @@ class ReceiptDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_receipt_detail)
+        setContentView(R.layout.fragment_receipt_detail)
 
         receipt_id = intent.getStringExtra(EXTRA_RECEIPT_ID)
         if (receipt_id == null) {
