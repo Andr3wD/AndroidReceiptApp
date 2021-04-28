@@ -1,5 +1,6 @@
 package com.bignerdranch.android.androidreceiptapp
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -16,7 +17,6 @@ import java.util.*
 private const val TAG = "ReceiptListFragment"
 
 class ReceiptListFragment : Fragment() {
-    /*
 
     /**
      * Required interface for hosting activities
@@ -26,7 +26,6 @@ class ReceiptListFragment : Fragment() {
     }
 
     private var callbacks: Callbacks? = null
-     */
 
     private lateinit var receiptRecyclerView: RecyclerView
     private var adapter: ReceiptAdapter? = ReceiptAdapter(emptyList())
@@ -38,12 +37,10 @@ class ReceiptListFragment : Fragment() {
         ViewModelProviders.of(this).get(ReceiptDetailViewModel::class.java)
     }
 
-    /*
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callbacks = context as Callbacks?
     }
-    */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,12 +74,11 @@ class ReceiptListFragment : Fragment() {
             })
     }
 
-    /*
     override fun onDetach() {
         super.onDetach()
         callbacks = null
     }
-    */
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_receipt_list, menu)
@@ -135,7 +131,7 @@ class ReceiptListFragment : Fragment() {
         override fun onClick(v: View) {
             // Toast.makeText(context, "${receipt.Title} pressed!", Toast.LENGTH_SHORT).show()
             receiptDetailViewModel.loadReceipt(receipt.ReceiptID)
-            // TODO: Swap out the fragment
+            callbacks?.onReceiptSelected(receipt.ReceiptID)
         }
     }
 

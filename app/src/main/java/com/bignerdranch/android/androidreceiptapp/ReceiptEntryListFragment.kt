@@ -21,8 +21,8 @@ class ReceiptEntryListFragment : Fragment() {
     private lateinit var entryRecyclerView: RecyclerView
     private var adapter: EntryAdapter? = EntryAdapter(emptyList())
 
-    private val entryListViewModel: ReceiptEntryListViewModel by lazy {
-        ViewModelProviders.of(this).get(ReceiptEntryListViewModel::class.java)
+    private val receiptDetailViewModel: ReceiptDetailViewModel by lazy {
+        ViewModelProviders.of(this).get(ReceiptDetailViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -38,15 +38,15 @@ class ReceiptEntryListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        entryListViewModel.bind(this.id)
-        entryListViewModel.entryListLiveData.observe(
-                viewLifecycleOwner,
-                Observer { entries ->
-                    entries?.let {
-                        Log.i(TAG, "Got receipts ${entries.size}")
-                        updateUI(entries)
-                    }
-                })
+        receiptDetailViewModel.entriesLiveData.observe(
+            viewLifecycleOwner,
+            Observer { entries ->
+                entries?.let {
+                    Log.i(TAG, "Got entries ${entries.size}")
+                    updateUI(entries)
+                }
+            }
+        )
     }
 
     private fun updateUI(entries: List<ReceiptEntry>) {
