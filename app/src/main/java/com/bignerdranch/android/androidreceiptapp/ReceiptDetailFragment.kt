@@ -14,8 +14,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.*
 
 private const val TAG = "ReceiptDetailFragment"
+private const val ARG_RECEIPT_ID = "receipt_id"
 
 class ReceiptDetailFragment : Fragment() {
 
@@ -29,6 +31,13 @@ class ReceiptDetailFragment : Fragment() {
         ViewModelProviders.of(this).get(ReceiptDetailViewModel::class.java)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val receiptID: UUID = arguments?.getSerializable(ARG_RECEIPT_ID) as UUID
+        Log.d(TAG, "args bundle receipt ID: $receiptID")
+        receiptDetailViewModel.loadReceipt(receiptID)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,7 +45,7 @@ class ReceiptDetailFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_receipt_detail, container, false)
 
-        entryRecyclerView = view.findViewById(R.id.entry_recycler_view) as RecyclerView
+        entryRecyclerView = view.findViewById(R.id.detail_entry_list) as RecyclerView
         entryRecyclerView.layoutManager = LinearLayoutManager(context)
         entryRecyclerView.adapter = adapter
 
@@ -73,6 +82,7 @@ class ReceiptDetailFragment : Fragment() {
                 }
             }
         )
+
     }
 
     private inner class EntryHolder(view: View) : RecyclerView.ViewHolder(view),
@@ -112,6 +122,18 @@ class ReceiptDetailFragment : Fragment() {
         override fun onBindViewHolder(holder: EntryHolder, position: Int) {
             val entry = entries[position]
             holder.bind(entry)
+        }
+    }
+
+    companion object {
+
+        fun newInstance(receiptID: UUID): ReceiptDetailFragment {
+            val args = Bundle().apply {
+                putSerializable(ARG_RECEIPT_ID, receiptID)
+            }
+            return ReceiptDetailFragment().apply {
+                arguments = args
+            }
         }
     }
 }
