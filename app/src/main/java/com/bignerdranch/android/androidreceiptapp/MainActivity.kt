@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), ReceiptDataEntryFragment.Callbacks, Re
             supportFragmentManager.findFragmentById(R.id.fragment_container)
 
         if (currentFragment == null) {
-            val fragment = ReceiptListFragment.newInstance()
+            val fragment = ReceiptDataEntryFragment.newInstance()
             supportFragmentManager
                 .beginTransaction()
                 .add(R.id.fragment_container, fragment)
