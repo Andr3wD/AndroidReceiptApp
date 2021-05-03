@@ -4,7 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraint_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/usable_white"
+    android:layout_marginVertical="4dp"
+    android:layout_marginHorizontal="8dp"
+    android:elevation="8dp">
+
+    <ImageView
+        android:id="@+id/store_image"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/target_logo" />
 
     <TextView
         android:id="@+id/receipt_title"
@@ -15,6 +31,10 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="2dp"
         android:text="Receipt Title"
+        android:textColor="@color/usable_black"
+        android:textStyle="bold"
+        android:background="@color/usable_white_variant"
+        android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/receipt_date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/store_image"
@@ -30,6 +50,9 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="2dp"
         android:text="Receipt Date"
+        android:textColor="@color/usable_black"
+        android:background="@color/usable_white_variant"
+        android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/receipt_total"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/store_image"
@@ -44,20 +67,11 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="4dp"
         android:text="Receipt Total"
+        android:textColor="@color/usable_black"
+        android:background="@color/usable_white_variant"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/store_image"
         app:layout_constraintTop_toBottomOf="@+id/receipt_date" />
-
-    <ImageView
-        android:id="@+id/store_image"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/target_logo" />
 </androidx.constraintlayout.widget.ConstraintLayout>

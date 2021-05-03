@@ -4,7 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/detail_receipt"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/usable_white">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Title:"
+        android:fontFamily="serif"
+        android:textAlignment="center"
+        android:textSize="12dp"
+        android:textColor="@color/usable_black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/detail_receipt_title"
@@ -13,10 +30,30 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="ReceiptTitle"
+        android:text="Receipt Title"
+        android:textAlignment="center"
+        android:textSize="16dp"
+        android:textColor="@color/usable_black"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Date:"
+        android:fontFamily="serif"
+        android:textAlignment="center"
+        android:textSize="12dp"
+        android:textColor="@color/usable_black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_receipt_title" />
 
     <TextView
         android:id="@+id/detail_receipt_date"
@@ -25,10 +62,29 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
-        android:text="ReceiptDate"
+        android:text="Receipt Date"
+        android:textAlignment="center"
+        android:textSize="16dp"
+        android:textColor="@color/usable_black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detail_receipt_title" />
+        app:layout_constraintTop_toBottomOf="@+id/date" />
+
+    <TextView
+        android:id="@+id/total"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Total:"
+        android:fontFamily="serif"
+        android:textAlignment="center"
+        android:textSize="12dp"
+        android:textColor="@color/usable_black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_receipt_date" />
 
     <TextView
         android:id="@+id/detail_receipt_total"
@@ -37,19 +93,23 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
-        android:text="ReceiptTotal"
+        android:text="Receipt Total"
+        android:textAlignment="center"
+        android:textSize="16dp"
+        android:textColor="@color/usable_black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detail_receipt_date" />
+        app:layout_constraintTop_toBottomOf="@+id/total" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/detail_entry_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/usable_white_variant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
