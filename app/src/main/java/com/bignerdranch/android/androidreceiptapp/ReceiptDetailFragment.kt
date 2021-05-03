@@ -100,7 +100,7 @@ class ReceiptDetailFragment : Fragment() {
         fun bind(entry: ReceiptEntry) {
             this.entry = entry
             nameTextView.text = this.entry.Name
-            priceTextView.text = this.entry.Price.toString()
+            priceTextView.text = "$" + this.entry.Price.toString()
         }
 
         override fun onClick(v: View) {
