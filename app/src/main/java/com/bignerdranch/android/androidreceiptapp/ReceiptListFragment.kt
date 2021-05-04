@@ -125,7 +125,7 @@ class ReceiptListFragment : Fragment() {
             this.receipt = receipt
             titleTextView.text = this.receipt.Title
             dateTextView.text = formatCrimeDate(this.receipt.Date)
-            totalTextView.text = this.receipt.TotalSpent.toString()
+            totalTextView.text = "$" + this.receipt.TotalSpent.toString()
         }
 
         override fun onClick(v: View) {

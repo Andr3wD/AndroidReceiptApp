@@ -78,7 +78,7 @@ class ReceiptDetailFragment : Fragment() {
                 receipt?.let {
                     titleTextView.text = receipt.Title
                     dateTextView.text = receipt.Date.toString()
-                    totalTextView.text = receipt.TotalSpent.toString()
+                    totalTextView.text = "$" + receipt.TotalSpent.toString()
                 }
             }
         )
@@ -100,7 +100,7 @@ class ReceiptDetailFragment : Fragment() {
         fun bind(entry: ReceiptEntry) {
             this.entry = entry
             nameTextView.text = this.entry.Name
-            priceTextView.text = this.entry.Price.toString()
+            priceTextView.text = "$" + this.entry.Price.toString()
         }
 
         override fun onClick(v: View) {

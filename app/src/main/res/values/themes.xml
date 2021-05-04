@@ -12,5 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="text_color">#000000</item>
+        <item name="round_rect">@drawable/rounded_rectangle_light</item>
     </style>
 </resources>
