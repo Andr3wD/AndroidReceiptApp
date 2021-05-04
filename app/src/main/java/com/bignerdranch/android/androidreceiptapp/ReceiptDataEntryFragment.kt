@@ -32,6 +32,7 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
     private lateinit var cameraButton: ImageButton
     private lateinit var photoButton: ImageButton
     private lateinit var cameraImageDisplay: ImageView
+    private lateinit var cameraImage: ImageView
     private lateinit var saveEntryButton: Button
     private lateinit var nickNameET: EditText
     private lateinit var storeNameET: EditText
@@ -51,7 +52,7 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_data_entry, container, false)
 
-        photoFile = File("temp")
+        photoFile = File("temp.jpg")
         photoUri = FileProvider.getUriForFile(requireActivity(),
             "com.bignerdranch.android.androidreceiptapp.fileprovider",
             photoFile)
@@ -60,8 +61,12 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         storeNameET = view.findViewById(R.id.receipt_store_name) as EditText
         totalSpentET = view.findViewById(R.id.receipt_total_spent) as EditText
         dateButton = view.findViewById(R.id.receipt_date) as Button
+        cameraImage = view.findViewById(R.id.receipt_camera_image) as ImageView
         dateButton.setText(Date().toString())
         purchaseDate = Date()
+
+        cameraImage.setImageURI(photoUri)
+        Toast.makeText(context,photoUri.toString(),Toast.LENGTH_SHORT).show()
 
         var receiptRepo = ReceiptRepository.get()
 
@@ -100,6 +105,8 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
                 }
 
                 startActivityForResult(captureImage, REQUEST_PHOTO)
+                cameraImage.setImageURI(photoUri)
+                print(photoUri)
             }
         }
 
