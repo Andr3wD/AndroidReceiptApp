@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
-    android:background="@drawable/rounded_rectangle"
+    android:background="?attr/round_rect"
     android:elevation="8dp">
 
     <ImageView
@@ -33,7 +33,7 @@
         android:fontFamily="serif"
         android:text="Receipt Title"
         android:textAlignment="center"
-        android:textColor="@color/usable_black"
+        android:textColor="?attr/text_color"
         android:textSize="13sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/receipt_date"
@@ -53,7 +53,7 @@
         android:fontFamily="serif"
         android:text="Receipt Date"
         android:textAlignment="center"
-        android:textColor="@color/usable_black"
+        android:textColor="?attr/text_color"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/receipt_total"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,7 +71,7 @@
         android:fontFamily="serif"
         android:text="Receipt Total"
         android:textAlignment="center"
-        android:textColor="@color/usable_black"
+        android:textColor="?attr/text_color"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
-    android:background="@drawable/rounded_rectangle"
+    android:background="?attr/round_rect"
     android:elevation="8dp">
 
     <TextView
@@ -18,7 +18,7 @@
         android:layout_marginBottom="2dp"
         android:fontFamily="serif"
         android:text="EntryItemName"
-        android:textColor="@color/usable_black"
+        android:textColor="?attr/text_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -32,7 +32,7 @@
         android:layout_marginBottom="2dp"
         android:fontFamily="serif"
         android:text="EntryPrice"
-        android:textColor="@color/usable_black"
+        android:textColor="?attr/text_color"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

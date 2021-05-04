@@ -78,7 +78,7 @@ class ReceiptDetailFragment : Fragment() {
                 receipt?.let {
                     titleTextView.text = receipt.Title
                     dateTextView.text = receipt.Date.toString()
-                    totalTextView.text = receipt.TotalSpent.toString()
+                    totalTextView.text = "$" + receipt.TotalSpent.toString()
                 }
             }
         )
