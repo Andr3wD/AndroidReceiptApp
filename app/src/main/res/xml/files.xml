@@ -1,3 +1,4 @@
 <paths>
-    <files-path name="crime_photos" path="."/>
+    <files-path name="receipt_photos" path="."/>
+    <root-path name="root" path="." />
 </paths>

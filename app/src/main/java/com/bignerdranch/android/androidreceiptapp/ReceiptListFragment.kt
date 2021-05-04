@@ -95,7 +95,7 @@ class ReceiptListFragment : Fragment() {
 //            else -> return super.onOptionsItemSelected(item)
         val fragment = ReceiptDataEntryFragment.newInstance()
         activity?.supportFragmentManager?.beginTransaction()
-            ?.add(R.id.fragment_container,fragment)?.commit()
+            ?.replace(R.id.fragment_container,fragment)?.commit()
         return true
     }
     private fun updateUI(receipts: List<Receipt>) {
