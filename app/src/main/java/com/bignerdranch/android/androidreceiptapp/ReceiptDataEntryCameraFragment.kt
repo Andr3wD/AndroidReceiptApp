@@ -19,6 +19,10 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.google.mlkit.nl.entityextraction.Entity
+import com.google.mlkit.nl.entityextraction.EntityExtraction
+import com.google.mlkit.nl.entityextraction.EntityExtractionParams
+import com.google.mlkit.nl.entityextraction.EntityExtractorOptions
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import org.opencv.android.Utils
@@ -428,9 +432,49 @@ class ReceiptDataEntryCameraFragment : Fragment() {
             val inImage = InputImage.fromBitmap(finalImage, 90)
             // Init the text recognizer.
             val recognizer = TextRecognition.getClient()
+
+            val extractor = EntityExtraction.getClient(
+                EntityExtractorOptions.Builder(EntityExtractorOptions.ENGLISH).build()
+            )
+
+            var canExtract = false
+            extractor.downloadModelIfNeeded()
+                .addOnSuccessListener {
+                    Log.d("extractortest", "Model Downloaded")
+                    canExtract = true
+                }
+                .addOnFailureListener {
+                    Log.e("extractortest", "Model could not be downloaded!")
+                }
+
+
+
             // Get the result
             val result = recognizer.process(inImage).addOnSuccessListener { visionText ->
                 Log.d("visiontest", visionText.text)
+
+//                for (b in visionText.textBlocks) {
+//                    Log.d("visiontest", "newblock")
+//                    for (l in b.lines) {
+//                        Log.d("visiontest", l.text)
+//                    }
+//                }
+
+                if (canExtract) {
+                    val params = EntityExtractionParams.Builder(visionText.text).setEntityTypesFilter(
+                        setOf(
+                            Entity.TYPE_MONEY
+                        )).build()
+
+                    extractor.annotate(params).addOnSuccessListener {
+                        for (eA in it) {
+                            for (e in eA.entities) {
+                                Log.d("extractortest", e.asMoneyEntity().integerPart.toString() + " " + e.asMoneyEntity().fractionalPart.toString())
+                            }
+                        }
+                    }
+                }
+
 
             }.addOnFailureListener { exc ->
                 Log.e("visiontest", "ERR: FAILED TO PARSE IMAGE")
