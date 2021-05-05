@@ -19,6 +19,7 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import com.google.mlkit.nl.entityextraction.*
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
@@ -26,6 +27,8 @@ import org.opencv.android.Utils
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import java.nio.ByteBuffer
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 
@@ -35,10 +38,15 @@ class ReceiptDataEntryCameraFragment : Fragment() {
     private lateinit var cameraTakeButton: Button
     private lateinit var camManager: CameraManager
     private lateinit var imgReader: ImageReader
+    private lateinit var confirmButton: Button
     private var takeLastImage: Boolean = false
     private lateinit var cameraSession: CameraCaptureSession
     private lateinit var cameraDevice: CameraDevice
     private lateinit var pixelDens: android.util.Size
+
+    private val receiptDataEntryViewModel: ReceiptDataEntryViewModel by lazy {
+        ViewModelProviders.of(requireActivity()).get(ReceiptDataEntryViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,6 +58,7 @@ class ReceiptDataEntryCameraFragment : Fragment() {
 
         // Get the views
         cameraTakeButton = view.findViewById(R.id.take_picture_button) as Button
+        confirmButton = view.findViewById(R.id.confirm_picture_button) as Button
         cameraImageDisplay = view.findViewById(R.id.camera_display_view) as ImageView
         cameraImageDisplay.rotation = 90F
 
@@ -104,6 +113,10 @@ class ReceiptDataEntryCameraFragment : Fragment() {
         // Make a camera2 camera attached to the ImageReader surface
         makeCameraStuff(imgReader.surface, CameraDevice.TEMPLATE_PREVIEW, 50)
         return view
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
     }
 
 
@@ -181,7 +194,6 @@ class ReceiptDataEntryCameraFragment : Fragment() {
                 break
             }
         }
-
 
         // If we're taking the high res image, then:
         if (takeLastImage) {
@@ -450,13 +462,6 @@ class ReceiptDataEntryCameraFragment : Fragment() {
             val result = recognizer.process(inImage).addOnSuccessListener { visionText ->
                 Log.d("visiontest", visionText.text)
 
-//                for (b in visionText.textBlocks) {
-//                    Log.d("visiontest", "newblock")
-//                    for (l in b.lines) {
-//                        Log.d("visiontest", l.text)
-//                    }
-//                }
-
                 if (canExtract) {
                     val params = EntityExtractionParams.Builder(visionText.text).setEntityTypesFilter(
                         setOf(
@@ -466,16 +471,25 @@ class ReceiptDataEntryCameraFragment : Fragment() {
 
                     extractor.annotate(params).addOnSuccessListener {
                         Log.d("entityExtractTest", it.toString())
+                        var dateMili: Long = 0
+                        var maxCost: Double = 0.0
+
+
                         for (eA in it) {
                             for (e in eA.entities) {
 
                                 when (e) {
                                     is MoneyEntity -> {
                                         val mE = e.asMoneyEntity()
+                                        val tot = mE.integerPart + (mE.fractionalPart.toDouble()/100)
+                                        if (tot > maxCost) {
+                                            maxCost = tot
+                                        }
                                         Log.d("entityExtractTest", "${mE.unnormalizedCurrency} ${mE.integerPart}.${mE.fractionalPart}")
                                     }
                                     is DateTimeEntity -> {
                                         val dtE = e.asDateTimeEntity()
+                                        dateMili = dtE.timestampMillis
                                         Log.d("entityExtractTest", "${dtE.dateTimeGranularity} ${dtE.timestampMillis}")
                                     }
                                     else -> {
@@ -485,7 +499,19 @@ class ReceiptDataEntryCameraFragment : Fragment() {
 //                                Log.d("extractortest", e.asMoneyEntity().integerPart.toString() + " " + e.asMoneyEntity().fractionalPart.toString())
                             }
                         }
+
+                        val d = Date(dateMili)
+                        Log.d("entityExtractTest", "date: ${d}")
+                        Log.d("entityExtractTest", "maxCost: ${maxCost}")
+                        receiptDataEntryViewModel.dateFound = d
+                        receiptDataEntryViewModel.maxCostFound = maxCost
+                    }.addOnFailureListener {
+                        Log.e("entityExtractTest","failed to extract")
                     }
+//                    extractor.close()
+//                    recognizer.close()
+
+                    // TODO send data back to entry fragment.
                 }
 
 
@@ -524,6 +550,7 @@ class ReceiptDataEntryCameraFragment : Fragment() {
 
         }, null)
     }
+
 
     /**
      * Convert from JPEG Image objects to Bitmap.

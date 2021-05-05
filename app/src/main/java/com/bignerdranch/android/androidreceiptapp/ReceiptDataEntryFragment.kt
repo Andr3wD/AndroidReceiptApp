@@ -7,12 +7,14 @@ import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import com.bignerdranch.android.androidreceiptapp.database.ReceiptDao
 import org.opencv.core.*
 import java.io.File
@@ -24,6 +26,7 @@ private const val REQUEST_PHOTO = 2
 
 class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
 
+    @Deprecated("Other way to change fragments")
     interface Callbacks {
         fun onCameraSelected()
     }
@@ -42,6 +45,10 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
     private var filesDir = context?.applicationContext?.filesDir
     private lateinit var photoUri: Uri
 
+    private val receiptDataEntryViewModel: ReceiptDataEntryViewModel by lazy {
+        ViewModelProviders.of(requireActivity()).get(ReceiptDataEntryViewModel::class.java)
+    }
+
 
     private lateinit var photoFile: File
 
@@ -51,6 +58,7 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_data_entry, container, false)
+        Log.d("dataEntryFrag","onCreateView called")
 
         photoFile = File("temp.jpg")
         photoUri = FileProvider.getUriForFile(requireActivity(),
@@ -62,8 +70,14 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         totalSpentET = view.findViewById(R.id.receipt_total_spent) as EditText
         dateButton = view.findViewById(R.id.receipt_date) as Button
         cameraImage = view.findViewById(R.id.receipt_camera_image) as ImageView
-        dateButton.setText(Date().toString())
-        purchaseDate = Date()
+
+        purchaseDate = receiptDataEntryViewModel.dateFound
+        Log.d("dataEntryFrag","date: ${purchaseDate}")
+        Log.d("dataEntryFrag","cost: ${receiptDataEntryViewModel.maxCostFound.toString()}")
+
+        dateButton.setText(purchaseDate.toString())
+        totalSpentET.setText(receiptDataEntryViewModel.maxCostFound.toString())
+
 
         cameraImage.setImageURI(photoUri)
         Toast.makeText(context,photoUri.toString(),Toast.LENGTH_SHORT).show()
@@ -75,7 +89,11 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         photoButton = view.findViewById(R.id.receipt_camera_2) as ImageButton
 
         cameraButton.setOnClickListener {
-            callbacks?.onCameraSelected()
+//            callbacks?.onCameraSelected()
+
+            val fragment = ReceiptDataEntryCameraFragment.newInstance()
+            activity?.supportFragmentManager?.beginTransaction()
+                ?.replace(R.id.fragment_container,fragment)?.addToBackStack("receipt-entry-camera")?.commit()
         }
 
         photoButton.apply {
@@ -141,6 +159,15 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         }
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("dataEntryFrag", "resuming")
+        purchaseDate = receiptDataEntryViewModel.dateFound
+
+        dateButton.setText(purchaseDate.toString())
+        totalSpentET.setText(receiptDataEntryViewModel.maxCostFound.toString())
     }
 
     override fun onStart() {
