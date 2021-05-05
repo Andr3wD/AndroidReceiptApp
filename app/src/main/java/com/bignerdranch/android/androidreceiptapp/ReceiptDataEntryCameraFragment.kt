@@ -19,10 +19,7 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import com.google.mlkit.nl.entityextraction.Entity
-import com.google.mlkit.nl.entityextraction.EntityExtraction
-import com.google.mlkit.nl.entityextraction.EntityExtractionParams
-import com.google.mlkit.nl.entityextraction.EntityExtractorOptions
+import com.google.mlkit.nl.entityextraction.*
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import org.opencv.android.Utils
@@ -463,13 +460,29 @@ class ReceiptDataEntryCameraFragment : Fragment() {
                 if (canExtract) {
                     val params = EntityExtractionParams.Builder(visionText.text).setEntityTypesFilter(
                         setOf(
-                            Entity.TYPE_MONEY
+                            Entity.TYPE_MONEY,
+                            Entity.TYPE_DATE_TIME
                         )).build()
 
                     extractor.annotate(params).addOnSuccessListener {
+                        Log.d("entityExtractTest", it.toString())
                         for (eA in it) {
                             for (e in eA.entities) {
-                                Log.d("extractortest", e.asMoneyEntity().integerPart.toString() + " " + e.asMoneyEntity().fractionalPart.toString())
+
+                                when (e) {
+                                    is MoneyEntity -> {
+                                        val mE = e.asMoneyEntity()
+                                        Log.d("entityExtractTest", "${mE.unnormalizedCurrency} ${mE.integerPart}.${mE.fractionalPart}")
+                                    }
+                                    is DateTimeEntity -> {
+                                        val dtE = e.asDateTimeEntity()
+                                        Log.d("entityExtractTest", "${dtE.dateTimeGranularity} ${dtE.timestampMillis}")
+                                    }
+                                    else -> {
+                                        Log.d("entityExtractTest", "${e.toString()}")
+                                    }
+                                }
+//                                Log.d("extractortest", e.asMoneyEntity().integerPart.toString() + " " + e.asMoneyEntity().fractionalPart.toString())
                             }
                         }
                     }
