@@ -26,12 +26,6 @@ private const val REQUEST_PHOTO = 2
 
 class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
 
-    @Deprecated("Other way to change fragments")
-    interface Callbacks {
-        fun onCameraSelected()
-    }
-
-    private var callbacks: Callbacks? = null
     private lateinit var cameraButton: ImageButton
     private lateinit var photoButton: ImageButton
     private lateinit var cameraImageDisplay: ImageView
@@ -72,9 +66,6 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         cameraImage = view.findViewById(R.id.receipt_camera_image) as ImageView
 
         purchaseDate = receiptDataEntryViewModel.dateFound
-        Log.d("dataEntryFrag","date: ${purchaseDate}")
-        Log.d("dataEntryFrag","cost: ${receiptDataEntryViewModel.maxCostFound.toString()}")
-
         dateButton.setText(purchaseDate.toString())
         totalSpentET.setText(receiptDataEntryViewModel.maxCostFound.toString())
 
@@ -89,11 +80,9 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         photoButton = view.findViewById(R.id.receipt_camera_2) as ImageButton
 
         cameraButton.setOnClickListener {
-//            callbacks?.onCameraSelected()
-
             val fragment = ReceiptDataEntryCameraFragment.newInstance()
             activity?.supportFragmentManager?.beginTransaction()
-                ?.replace(R.id.fragment_container,fragment)?.addToBackStack("receipt-entry-camera")?.commit()
+                ?.replace(R.id.fragment_container,fragment)?.addToBackStack("camera-fragment")?.commit()
         }
 
         photoButton.apply {
@@ -154,8 +143,6 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
             val fragment = ReceiptListFragment.newInstance()
             activity?.supportFragmentManager?.beginTransaction()
                 ?.replace(R.id.fragment_container,fragment)?.commit()
-
-
         }
 
         return view
@@ -168,6 +155,8 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
 
         dateButton.setText(purchaseDate.toString())
         totalSpentET.setText(receiptDataEntryViewModel.maxCostFound.toString())
+        storeNameET.setText(receiptDataEntryViewModel.storeNameGuess)
+        receiptDataEntryViewModel.clearMemory()
     }
 
     override fun onStart() {
@@ -185,11 +174,6 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         dateButton.setText(date.toString())
         purchaseDate = date
 
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callbacks = context as Callbacks?
     }
 
     companion object {

@@ -110,6 +110,10 @@ class ReceiptDataEntryCameraFragment : Fragment() {
             }
         }
 
+        confirmButton.setOnClickListener {
+            fragmentManager!!.popBackStack()
+        }
+
         // Make a camera2 camera attached to the ImageReader surface
         makeCameraStuff(imgReader.surface, CameraDevice.TEMPLATE_PREVIEW, 50)
         return view
@@ -441,6 +445,7 @@ class ReceiptDataEntryCameraFragment : Fragment() {
             val inImage = InputImage.fromBitmap(finalImage, 90)
             // Init the text recognizer.
             val recognizer = TextRecognition.getClient()
+            lifecycle.addObserver(recognizer)
 
             val extractor = EntityExtraction.getClient(
                 EntityExtractorOptions.Builder(EntityExtractorOptions.ENGLISH).build()
@@ -455,7 +460,8 @@ class ReceiptDataEntryCameraFragment : Fragment() {
                 .addOnFailureListener {
                     Log.e("extractortest", "Model could not be downloaded!")
                 }
-
+            // Want the extractor to close when the fragment does.
+            lifecycle.addObserver(extractor)
 
 
             // Get the result
@@ -493,7 +499,7 @@ class ReceiptDataEntryCameraFragment : Fragment() {
                                         Log.d("entityExtractTest", "${dtE.dateTimeGranularity} ${dtE.timestampMillis}")
                                     }
                                     else -> {
-                                        Log.d("entityExtractTest", "${e.toString()}")
+                                        Log.d("entityExtractTest", "${eA.annotatedText}")
                                     }
                                 }
 //                                Log.d("extractortest", e.asMoneyEntity().integerPart.toString() + " " + e.asMoneyEntity().fractionalPart.toString())
@@ -505,13 +511,15 @@ class ReceiptDataEntryCameraFragment : Fragment() {
                         Log.d("entityExtractTest", "maxCost: ${maxCost}")
                         receiptDataEntryViewModel.dateFound = d
                         receiptDataEntryViewModel.maxCostFound = maxCost
+                        receiptDataEntryViewModel.storeNameGuess = visionText.textBlocks[0].lines[0].text
+                        Log.d("entityExtractTest", "storeNameGuess: ${receiptDataEntryViewModel.storeNameGuess}")
+
+                        extractor.close()
+                        recognizer.close()
                     }.addOnFailureListener {
                         Log.e("entityExtractTest","failed to extract")
                     }
-//                    extractor.close()
-//                    recognizer.close()
 
-                    // TODO send data back to entry fragment.
                 }
 
 
@@ -542,6 +550,7 @@ class ReceiptDataEntryCameraFragment : Fragment() {
                 // Start the capture
                 session.capture(capture.build(), null, null)
                 Log.d("test", "FULL CAMERA CONFIG SUCCESSFUL")
+                session.close()
             }
 
             override fun onConfigureFailed(session: CameraCaptureSession) {

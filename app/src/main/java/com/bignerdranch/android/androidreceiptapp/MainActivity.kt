@@ -11,7 +11,7 @@ import org.opencv.android.OpenCVLoader
 import java.util.*
 
 private const val TAG = "MainActivity"
-class MainActivity : AppCompatActivity(), ReceiptDataEntryFragment.Callbacks, ReceiptListFragment.Callbacks {
+class MainActivity : AppCompatActivity(), ReceiptListFragment.Callbacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -42,15 +42,6 @@ class MainActivity : AppCompatActivity(), ReceiptDataEntryFragment.Callbacks, Re
                 .add(R.id.fragment_container, fragment)
                 .commit()
         }
-    }
-
-    override fun onCameraSelected() {
-        val fragment = ReceiptDataEntryCameraFragment.newInstance()
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack("camera-fragment")
-            .commit()
     }
 
     override fun onReceiptSelected(receiptID: UUID) {
