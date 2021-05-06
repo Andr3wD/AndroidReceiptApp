@@ -126,6 +126,12 @@ class ReceiptListFragment : Fragment() {
             titleTextView.text = this.receipt.Title
             dateTextView.text = formatCrimeDate(this.receipt.Date)
             totalTextView.text = "$" + this.receipt.TotalSpent.toString()
+            // Set icon based on store
+            when (this.receipt.Store.toLowerCase()) {
+                // TODO: Add more store icons (recommended size is 60x60px)
+                "target" -> imageView.setImageResource(R.drawable.target_logo)
+                else -> imageView.setImageResource(R.drawable.ic_baseline_receipt)
+            }
         }
 
         override fun onClick(v: View) {
