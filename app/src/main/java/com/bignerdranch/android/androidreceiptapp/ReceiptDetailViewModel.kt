@@ -28,6 +28,12 @@ class ReceiptDetailViewModel : ViewModel() {
         receiptIdLiveData.value = receiptId
     }
 
+    fun addEntry(name: String, category: String, price: Double) {
+        var entry = ReceiptEntry(ReceiptID=receiptIdLiveData.value!!, EntryIndex=entriesLiveData.value!!.size, Name=name, Category=category, Price=price)
+        receiptRepository.addEntry(entry)
+        loadReceipt(receiptIdLiveData.value!!)
+    }
+
     /*
     fun saveReceipt(receipt: Receipt) {
         receiptRepository.updateReceipt(receipt)

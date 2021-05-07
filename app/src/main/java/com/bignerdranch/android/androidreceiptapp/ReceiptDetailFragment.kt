@@ -4,16 +4,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
 private const val TAG = "ReceiptDetailFragment"
@@ -25,6 +26,7 @@ class ReceiptDetailFragment : Fragment() {
     private lateinit var dateTextView: TextView
     private lateinit var totalTextView: TextView
     private lateinit var entryRecyclerView: RecyclerView
+    private lateinit var addEntryButton: FloatingActionButton
     private var adapter: EntryAdapter? = EntryAdapter(emptyList())
 
     private val receiptDetailViewModel: ReceiptDetailViewModel by lazy {
@@ -52,6 +54,11 @@ class ReceiptDetailFragment : Fragment() {
         titleTextView = view.findViewById(R.id.detail_receipt_title)
         dateTextView = view.findViewById(R.id.detail_receipt_date)
         totalTextView = view.findViewById(R.id.detail_receipt_total)
+        addEntryButton = view.findViewById(R.id.detail_add_button)
+        addEntryButton.setOnClickListener {
+            receiptDetailViewModel.addEntry("New Entry", "", 0.0)
+            Toast.makeText(this@ReceiptDetailFragment.requireContext(), "Created new entry", Toast.LENGTH_SHORT).show()
+        }
 
         return view
     }
@@ -78,7 +85,7 @@ class ReceiptDetailFragment : Fragment() {
                 receipt?.let {
                     titleTextView.text = receipt.Title
                     dateTextView.text = receipt.Date.toString()
-                    totalTextView.text = "$" + receipt.TotalSpent.toString()
+                    totalTextView.text = "$%.2f".format(receipt.TotalSpent)
                 }
             }
         )
@@ -100,7 +107,7 @@ class ReceiptDetailFragment : Fragment() {
         fun bind(entry: ReceiptEntry) {
             this.entry = entry
             nameTextView.text = this.entry.Name
-            priceTextView.text = "$" + this.entry.Price.toString()
+            priceTextView.text = "$%.2f".format(entry.Price)
         }
 
         override fun onClick(v: View) {
