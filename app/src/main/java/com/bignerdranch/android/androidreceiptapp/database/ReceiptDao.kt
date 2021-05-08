@@ -1,10 +1,7 @@
 package com.bignerdranch.android.androidreceiptapp.database
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.bignerdranch.android.androidreceiptapp.Receipt
 import com.bignerdranch.android.androidreceiptapp.ReceiptEntry
 import java.util.*
@@ -31,4 +28,10 @@ interface ReceiptDao {
 
     @Insert
     fun addEntry(entry: ReceiptEntry)
+
+    @Delete
+    fun deleteReceipt(receipt: Receipt)
+
+    @Delete
+    fun deleteEntry(entry: ReceiptEntry)
 }

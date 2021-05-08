@@ -24,15 +24,26 @@ class ReceiptDetailViewModel : ViewModel() {
             }
 
     fun loadReceipt(receiptId: UUID) {
-        Log.i(TAG, "Loaded ReceiptID")
         receiptIdLiveData.value = receiptId
+        Log.i(TAG, "Loading max index")
     }
 
-    fun addEntry(name: String, category: String, price: Double) : ReceiptEntry {
-        var entry = ReceiptEntry(ReceiptID=receiptIdLiveData.value!!, EntryIndex=entriesLiveData.value!!.size, Name=name, Category=category, Price=price)
+    fun addEntry(name: String, category: String, price: Double) {
+        // Get the max index of the entries. We're doing this here every time because I could not get
+        // a sql query that does this to work with Room
+        var maxIndex = -1
+        for (entry in entriesLiveData.value!!) {
+            if (entry.EntryIndex > maxIndex)
+                maxIndex = entry.EntryIndex
+        }
+        var entry = ReceiptEntry(ReceiptID=receiptIdLiveData.value!!, EntryIndex=maxIndex+1, Name=name, Category=category, Price=price)
         receiptRepository.addEntry(entry)
         loadReceipt(receiptIdLiveData.value!!)
         return entry
+    }
+
+    fun deleteEntry(entry: ReceiptEntry) {
+        receiptRepository.deleteEntry((entry))
     }
 
     /*

@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
@@ -58,7 +59,22 @@ class ReceiptListFragment : Fragment() {
             view.findViewById(R.id.receipt_recycler_view) as RecyclerView
         receiptRecyclerView.layoutManager = LinearLayoutManager(context)
         receiptRecyclerView.adapter = adapter
+        val itemTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
 
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val receiptHolder = viewHolder as ReceiptHolder
+                receiptListViewModel.deleteReceipt(receiptHolder.getReceipt())
+                receiptListViewModel.loadReceipts()
+            }
+        }
+        ItemTouchHelper(itemTouchCallback).attachToRecyclerView(receiptRecyclerView)
         return view
     }
 
@@ -121,15 +137,20 @@ class ReceiptListFragment : Fragment() {
             itemView.setOnClickListener(this)
         }
 
+        fun getReceipt() = receipt
+
         fun bind(receipt: Receipt) {
             this.receipt = receipt
             titleTextView.text = this.receipt.Title
             dateTextView.text = formatCrimeDate(this.receipt.Date)
-            totalTextView.text = "$" + this.receipt.TotalSpent.toString()
+            totalTextView.text = "$%.2f".format(this.receipt.TotalSpent)
             // Set icon based on store
             when (this.receipt.Store.toLowerCase()) {
                 // TODO: Add more store icons (recommended size is 60x60px)
                 "target" -> imageView.setImageResource(R.drawable.target_logo)
+                "albertsons" -> imageView.setImageResource(R.drawable.albertsons_logo)
+                "costco" -> imageView.setImageResource(R.drawable.costco_logo)
+                "walmart" -> imageView.setImageResource(R.drawable.walmart_logo)
                 else -> imageView.setImageResource(R.drawable.ic_baseline_receipt)
             }
         }
