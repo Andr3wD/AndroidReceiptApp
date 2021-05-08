@@ -3,12 +3,16 @@ package com.bignerdranch.android.androidreceiptapp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -89,7 +93,6 @@ class ReceiptDetailFragment : Fragment() {
                 }
             }
         )
-
     }
 
     private inner class EntryHolder(view: View) : RecyclerView.ViewHolder(view),
@@ -97,17 +100,68 @@ class ReceiptDetailFragment : Fragment() {
 
         private lateinit var entry: ReceiptEntry
 
-        private val nameTextView: TextView = itemView.findViewById(R.id.entry_name)
-        private val priceTextView: TextView = itemView.findViewById(R.id.entry_price)
+        private var nameEditText: EditText = itemView.findViewById(R.id.entry_name)
+        private var priceEditText: EditText = itemView.findViewById(R.id.entry_price)
 
         init {
             itemView.setOnClickListener(this)
+            with(nameEditText) {
+                addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                        return
+                    }
+
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                        return
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {
+                        return
+                    }
+                })
+            }
+
+            with(priceEditText) {
+                addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                        return
+                    }
+
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                        return
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {
+                        return
+                    }
+                })
+            }
         }
 
         fun bind(entry: ReceiptEntry) {
             this.entry = entry
-            nameTextView.text = this.entry.Name
-            priceTextView.text = "$%.2f".format(entry.Price)
+            nameEditText.setText(this.entry.Name)
+            priceEditText.setText("$%.2f".format(entry.Price))
         }
 
         override fun onClick(v: View) {
