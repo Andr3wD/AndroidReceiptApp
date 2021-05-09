@@ -95,10 +95,17 @@ class ReceiptDetailFragment : Fragment() {
         )
     }
 
+    override fun onStop() {
+        super.onStop()
+        adapter?.onStop()
+    }
+
     private inner class EntryHolder(view: View) : RecyclerView.ViewHolder(view),
         View.OnClickListener {
 
         private lateinit var entry: ReceiptEntry
+        private var initialName : Boolean = true
+        private var initialPrice : Boolean = true
 
         private var nameEditText: EditText = itemView.findViewById(R.id.entry_name)
         private var priceEditText: EditText = itemView.findViewById(R.id.entry_price)
@@ -113,7 +120,7 @@ class ReceiptDetailFragment : Fragment() {
                         count: Int,
                         after: Int
                     ) {
-                        return
+                        //
                     }
 
                     override fun onTextChanged(
@@ -122,11 +129,15 @@ class ReceiptDetailFragment : Fragment() {
                         before: Int,
                         count: Int
                     ) {
-                        return
+                        if (initialName) {
+                            initialName = false
+                            return
+                        }
+                        entry.Name = s.toString()
                     }
 
                     override fun afterTextChanged(s: Editable?) {
-                        return
+                        //
                     }
                 })
             }
@@ -139,7 +150,7 @@ class ReceiptDetailFragment : Fragment() {
                         count: Int,
                         after: Int
                     ) {
-                        return
+                        //
                     }
 
                     override fun onTextChanged(
@@ -148,11 +159,24 @@ class ReceiptDetailFragment : Fragment() {
                         before: Int,
                         count: Int
                     ) {
-                        return
+                        if (initialPrice) {
+                            initialPrice = false
+                            return
+                        }
+                        val regex = Regex("^[0-9]*\\.?[0-9]+\$")
+                        val parsedPrice = regex.replace(s.toString(),"")
+                        var parsedPriceDouble : Double
+                        try {
+                            entry.Price = parsedPrice.toDouble()
+                        }
+                        catch (e: NumberFormatException) {
+                            entry.Price = entry.Price
+                            //Toast the user here to warn them about an invalid entry
+                        }
                     }
 
                     override fun afterTextChanged(s: Editable?) {
-                        return
+                        //
                     }
                 })
             }
@@ -184,6 +208,15 @@ class ReceiptDetailFragment : Fragment() {
             val entry = entries[position]
             holder.bind(entry)
         }
+
+        fun onStop()
+        {
+            for (entry in entries)
+            {
+                receiptDetailViewModel.updateEntry(entry)
+            }
+        }
+
     }
 
     companion object {

@@ -35,6 +35,11 @@ class ReceiptDetailViewModel : ViewModel() {
         return entry
     }
 
+    fun updateEntry(entry: ReceiptEntry) {
+        receiptRepository.updateEntry(entry)
+
+    }
+
     /*
     fun saveReceipt(receipt: Receipt) {
         receiptRepository.updateReceipt(receipt)
