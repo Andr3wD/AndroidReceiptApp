@@ -227,6 +227,9 @@ class ReceiptDetailFragment : Fragment() {
 
         override fun onBindViewHolder(holder: EntryHolder, position: Int) {
             val entry = entries[position]
+            if (entry.Name == "") {
+                entry.Name = "New Entry"
+            }
             holder.bind(entry)
         }
 
@@ -234,6 +237,9 @@ class ReceiptDetailFragment : Fragment() {
         {
             for (entry in entries)
             {
+                if (entry.Name == "") {
+                    entry.Name = "New Entry"
+                }
                 receiptDetailViewModel.updateEntry(entry)
             }
         }
