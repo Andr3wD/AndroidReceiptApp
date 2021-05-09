@@ -8,10 +8,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.MutableLiveData
 import java.util.*
 
 
@@ -29,7 +31,7 @@ class ReceiptListFragment : Fragment() {
     private var callbacks: Callbacks? = null
 
     private lateinit var receiptRecyclerView: RecyclerView
-    private var adapter: ReceiptAdapter? = ReceiptAdapter(emptyList())
+    private var adapter: ReceiptAdapter? = ReceiptAdapter(mutableListOf<Receipt>())
 
     private val receiptListViewModel: ReceiptListViewModel by lazy {
         ViewModelProviders.of(this).get(ReceiptListViewModel::class.java)
@@ -71,7 +73,8 @@ class ReceiptListFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val receiptHolder = viewHolder as ReceiptHolder
                 receiptListViewModel.deleteReceipt(receiptHolder.getReceipt())
-                receiptListViewModel.loadReceipts()
+                receiptListViewModel.receiptListLiveData.value!!.toMutableList().removeAt(viewHolder.adapterPosition)
+                receiptRecyclerView.adapter!!.notifyItemRemoved(viewHolder.adapterPosition)
             }
         }
         ItemTouchHelper(itemTouchCallback).attachToRecyclerView(receiptRecyclerView)

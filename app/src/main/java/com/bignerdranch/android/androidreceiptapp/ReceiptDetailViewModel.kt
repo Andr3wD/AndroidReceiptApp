@@ -39,7 +39,6 @@ class ReceiptDetailViewModel : ViewModel() {
         var entry = ReceiptEntry(ReceiptID=receiptIdLiveData.value!!, EntryIndex=maxIndex+1, Name=name, Category=category, Price=price)
         receiptRepository.addEntry(entry)
         loadReceipt(receiptIdLiveData.value!!)
-        return entry
     }
 
     fun deleteEntry(entry: ReceiptEntry) {

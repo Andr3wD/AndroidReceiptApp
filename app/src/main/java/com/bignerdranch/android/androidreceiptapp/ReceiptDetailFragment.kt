@@ -68,7 +68,8 @@ class ReceiptDetailFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val entryHolder = viewHolder as ReceiptDetailFragment.EntryHolder
                 receiptDetailViewModel.deleteEntry(entryHolder.getEntry())
-                receiptDetailViewModel.loadReceipt(receiptDetailViewModel.receiptLiveData.value!!.ReceiptID)
+                receiptDetailViewModel.entriesLiveData.value!!.toMutableList().removeAt(viewHolder.adapterPosition)
+                entryRecyclerView.adapter!!.notifyItemRemoved(viewHolder.adapterPosition)
             }
         }
         ItemTouchHelper(itemTouchCallback).attachToRecyclerView(entryRecyclerView)
