@@ -28,6 +28,10 @@ class ReceiptDetailViewModel : ViewModel() {
         Log.i(TAG, "Loading max index")
     }
 
+    fun updateReceipt(receipt: Receipt) {
+        receiptRepository.updateReceipt(receipt)
+    }
+
     fun addEntry(name: String, category: String, price: Double) {
         // Get the max index of the entries. We're doing this here every time because I could not get
         // a sql query that does this to work with Room

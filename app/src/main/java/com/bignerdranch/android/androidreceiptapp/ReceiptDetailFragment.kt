@@ -1,7 +1,5 @@
 package com.bignerdranch.android.androidreceiptapp
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,10 +7,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -20,18 +15,23 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.time.Instant.now
 import java.util.*
 
 private const val TAG = "ReceiptDetailFragment"
 private const val ARG_RECEIPT_ID = "receipt_id"
+private const val DIALOG_DATE = "DialogDate"
+private const val REQUEST_DATE = 0
 
-class ReceiptDetailFragment : Fragment() {
+class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
 
-    private lateinit var titleTextView: TextView
-    private lateinit var dateTextView: TextView
-    private lateinit var totalTextView: TextView
+    private lateinit var titleEditText: EditText
+    private lateinit var dateButton: Button
+    private lateinit var totalEditText: EditText
+    private lateinit var storeEditText: EditText
     private lateinit var entryRecyclerView: RecyclerView
     private lateinit var addEntryButton: FloatingActionButton
+    private lateinit var myReceipt: Receipt
     private var adapter: EntryAdapter? = EntryAdapter(emptyList())
 
     private val receiptDetailViewModel: ReceiptDetailViewModel by lazy {
@@ -74,9 +74,97 @@ class ReceiptDetailFragment : Fragment() {
         }
         ItemTouchHelper(itemTouchCallback).attachToRecyclerView(entryRecyclerView)
 
-        titleTextView = view.findViewById(R.id.detail_receipt_title)
-        dateTextView = view.findViewById(R.id.detail_receipt_date)
-        totalTextView = view.findViewById(R.id.detail_receipt_total)
+        titleEditText = view.findViewById(R.id.detail_receipt_title)
+        titleEditText.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+                //
+            }
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                myReceipt.Title = s.toString()
+                Log.d(TAG,myReceipt.Title)
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                //
+            }
+
+        })
+        dateButton = view.findViewById(R.id.detail_receipt_date)
+        dateButton.setOnClickListener {
+            DatePickerFragment.newInstance(date = myReceipt.Date).apply {
+                setTargetFragment(this@ReceiptDetailFragment, REQUEST_DATE)
+                show(this@ReceiptDetailFragment.requireFragmentManager(), DIALOG_DATE)
+            }
+        }
+        totalEditText = view.findViewById(R.id.detail_receipt_total)
+        totalEditText.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+                //
+            }
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                try {
+                    myReceipt.TotalSpent = s.toString().toDouble()
+                }
+                catch (e: NumberFormatException) {
+                    myReceipt.TotalSpent = myReceipt.TotalSpent
+                    //Toast the user here to warn them about an invalid entry
+                }
+                Log.d(TAG,myReceipt.TotalSpent.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                //
+            }
+
+        })
+        storeEditText = view.findViewById(R.id.detail_receipt_store)
+        storeEditText.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+                //
+            }
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                myReceipt.Store = s.toString()
+                Log.d(TAG,myReceipt.Store)
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                //
+            }
+        })
+
         addEntryButton = view.findViewById(R.id.detail_add_button)
         addEntryButton.setOnClickListener {
             receiptDetailViewModel.addEntry("New Entry", "", 0.0)
@@ -106,17 +194,23 @@ class ReceiptDetailFragment : Fragment() {
             viewLifecycleOwner,
             Observer { receipt ->
                 receipt?.let {
-                    titleTextView.text = receipt.Title
-                    dateTextView.text = receipt.Date.toString()
-                    totalTextView.text = "$%.2f".format(receipt.TotalSpent)
+                    myReceipt = receipt
+                    titleEditText.setText(receipt.Title)
+                    dateButton.text = receipt.Date.toString()
+                    storeEditText.setText(receipt.Store)
+                    totalEditText.setText("%.2f".format(receipt.TotalSpent))
                 }
             }
         )
+
+
     }
 
     override fun onStop() {
         super.onStop()
         adapter?.onStop()
+        Log.d(TAG,myReceipt.toString())
+        receiptDetailViewModel.updateReceipt(myReceipt)
     }
 
     private inner class EntryHolder(view: View) : RecyclerView.ViewHolder(view),
@@ -183,10 +277,8 @@ class ReceiptDetailFragment : Fragment() {
                             return
                         }
                         val regex = Regex("^[0-9]*\\.?[0-9]+\$")
-                        val parsedPrice = regex.replace(s.toString(),"")
-                        var parsedPriceDouble : Double
                         try {
-                            entry.Price = parsedPrice.toDouble()
+                            entry.Price = s.toString().toDouble()
                         }
                         catch (e: NumberFormatException) {
                             entry.Price = entry.Price
@@ -206,7 +298,7 @@ class ReceiptDetailFragment : Fragment() {
         fun bind(entry: ReceiptEntry) {
             this.entry = entry
             nameEditText.setText(this.entry.Name)
-            priceEditText.setText("$%.2f".format(entry.Price))
+            priceEditText.setText("%.2f".format(entry.Price))
         }
 
         override fun onClick(v: View) {
@@ -256,5 +348,11 @@ class ReceiptDetailFragment : Fragment() {
                 arguments = args
             }
         }
+    }
+
+    override fun onDateSelected(date: Date) {
+        dateButton.setText(date.toString())
+        myReceipt.Date = date
+
     }
 }
