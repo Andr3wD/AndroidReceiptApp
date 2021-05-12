@@ -68,7 +68,6 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val entryHolder = viewHolder as ReceiptDetailFragment.EntryHolder
                 receiptDetailViewModel.deleteEntry(entryHolder.getEntry())
-                receiptDetailViewModel.entriesLiveData.value!!.toMutableList().removeAt(viewHolder.adapterPosition)
                 entryRecyclerView.adapter!!.notifyItemRemoved(viewHolder.adapterPosition)
             }
         }
@@ -170,7 +169,6 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
             receiptDetailViewModel.addEntry("New Entry", "", 0.0)
             Toast.makeText(this@ReceiptDetailFragment.requireContext(), "Created new entry", Toast.LENGTH_SHORT).show()
         }
-
         return view
     }
 
@@ -186,7 +184,16 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
             Observer { entries ->
                 entries?.let {
                     Log.i(TAG, "Got entries ${entries.size}")
-                    updateUI(entries)
+                    // Sort by entry index
+                    val sorted = entries.toMutableList()
+                    sorted.sortWith(Comparator { lhs, rhs ->
+                        when {
+                            (lhs.EntryIndex < rhs.EntryIndex) -> -1
+                            (lhs.EntryIndex == rhs.EntryIndex) -> 0
+                            else -> 1
+                        }
+                    })
+                    updateUI(sorted as List<ReceiptEntry>)
                 }
             }
         )
