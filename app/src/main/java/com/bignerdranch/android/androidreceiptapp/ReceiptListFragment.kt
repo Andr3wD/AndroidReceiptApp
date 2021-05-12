@@ -73,7 +73,6 @@ class ReceiptListFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val receiptHolder = viewHolder as ReceiptHolder
                 receiptListViewModel.deleteReceipt(receiptHolder.getReceipt())
-                receiptListViewModel.receiptListLiveData.value!!.toMutableList().removeAt(viewHolder.adapterPosition)
                 receiptRecyclerView.adapter!!.notifyItemRemoved(viewHolder.adapterPosition)
             }
         }
@@ -88,7 +87,12 @@ class ReceiptListFragment : Fragment() {
             Observer { receipts ->
                 receipts?.let {
                     Log.i(TAG, "Got receipts ${receipts.size}")
-                    updateUI(receipts)
+                    // Sort by date by default
+                    val sorted = receipts.toMutableList()
+                    sorted.sortWith(Comparator { lhs, rhs ->
+                        lhs.Date.compareTo(rhs.Date)
+                    })
+                    updateUI(sorted as List<Receipt>)
                 }
             })
     }
