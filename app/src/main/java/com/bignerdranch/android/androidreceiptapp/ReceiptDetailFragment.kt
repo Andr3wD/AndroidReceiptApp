@@ -31,7 +31,7 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
     private lateinit var storeEditText: EditText
     private lateinit var entryRecyclerView: RecyclerView
     private lateinit var addEntryButton: FloatingActionButton
-    private lateinit var myReceipt: Receipt
+    private var myReceipt: Receipt? = null
     private var adapter: EntryAdapter? = EntryAdapter(emptyList())
 
     private val receiptDetailViewModel: ReceiptDetailViewModel by lazy {
@@ -90,8 +90,7 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
                 before: Int,
                 count: Int
             ) {
-                myReceipt.Title = s.toString()
-                Log.d(TAG,myReceipt.Title)
+                myReceipt?.Title = s.toString()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -101,9 +100,11 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
         })
         dateButton = view.findViewById(R.id.detail_receipt_date)
         dateButton.setOnClickListener {
-            DatePickerFragment.newInstance(date = myReceipt.Date).apply {
-                setTargetFragment(this@ReceiptDetailFragment, REQUEST_DATE)
-                show(this@ReceiptDetailFragment.requireFragmentManager(), DIALOG_DATE)
+            myReceipt?.let { it1 ->
+                DatePickerFragment.newInstance(date = it1.Date).apply {
+                    setTargetFragment(this@ReceiptDetailFragment, REQUEST_DATE)
+                    show(this@ReceiptDetailFragment.requireFragmentManager(), DIALOG_DATE)
+                }
             }
         }
         totalEditText = view.findViewById(R.id.detail_receipt_total)
@@ -124,13 +125,13 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
                 count: Int
             ) {
                 try {
-                    myReceipt.TotalSpent = s.toString().toDouble()
+                    myReceipt?.TotalSpent = s.toString().toDouble()
                 }
                 catch (e: NumberFormatException) {
-                    myReceipt.TotalSpent = myReceipt.TotalSpent
+                    myReceipt?.TotalSpent = myReceipt?.TotalSpent!!
                     //Toast the user here to warn them about an invalid entry
                 }
-                Log.d(TAG,myReceipt.TotalSpent.toString())
+                Log.d(TAG,myReceipt?.TotalSpent.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -155,8 +156,7 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
                 before: Int,
                 count: Int
             ) {
-                myReceipt.Store = s.toString()
-                Log.d(TAG,myReceipt.Store)
+                myReceipt?.Store = s.toString()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -217,7 +217,7 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
         super.onStop()
         adapter?.onStop()
         Log.d(TAG,myReceipt.toString())
-        receiptDetailViewModel.updateReceipt(myReceipt)
+        myReceipt?.let { receiptDetailViewModel.updateReceipt(it) }
     }
 
     private inner class EntryHolder(view: View) : RecyclerView.ViewHolder(view),
@@ -359,7 +359,7 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
 
     override fun onDateSelected(date: Date) {
         dateButton.setText(date.toString())
-        myReceipt.Date = date
+        myReceipt?.Date = date
 
     }
 }
