@@ -129,7 +129,6 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
                 }
                 catch (e: NumberFormatException) {
                     myReceipt?.TotalSpent = myReceipt?.TotalSpent!!
-                    //Toast the user here to warn them about an invalid entry
                 }
                 Log.d(TAG,myReceipt?.TotalSpent.toString())
             }
@@ -203,7 +202,7 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
                 receipt?.let {
                     myReceipt = receipt
                     titleEditText.setText(receipt.Title)
-                    dateButton.text = receipt.Date.toString()
+                    dateButton.text = formatDate(receipt.Date).toString()
                     storeEditText.setText(receipt.Store)
                     totalEditText.setText("%.2f".format(receipt.TotalSpent))
                 }
@@ -217,16 +216,26 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
         super.onStop()
         adapter?.onStop()
         Log.d(TAG,myReceipt.toString())
+        /* update the receipt on exit */
         myReceipt?.let { receiptDetailViewModel.updateReceipt(it) }
     }
 
+    /* Method used to format the date */
+    private fun formatDate(d: Date) : CharSequence? {
+        return android.text.format.DateFormat.format("EEEE, MMM dd, yyyy", d)
+    }
+
+    /* Defines the Receipt Entries and how they respond to editTexts being changed */
     private inner class EntryHolder(view: View) : RecyclerView.ViewHolder(view),
         View.OnClickListener {
 
         private lateinit var entry: ReceiptEntry
+
+        /* Variables added to make sure that the editText listeners don't fire upon starting */
         private var initialName : Boolean = true
         private var initialPrice : Boolean = true
 
+        /* These variables are given listeners to respond to change */
         private var nameEditText: EditText = itemView.findViewById(R.id.entry_name)
         private var priceEditText: EditText = itemView.findViewById(R.id.entry_price)
 
@@ -283,13 +292,12 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
                             initialPrice = false
                             return
                         }
-                        val regex = Regex("^[0-9]*\\.?[0-9]+\$")
+                        /* Only update the price if the entry is a number */
                         try {
                             entry.Price = s.toString().toDouble()
                         }
                         catch (e: NumberFormatException) {
                             entry.Price = entry.Price
-                            //Toast the user here to warn them about an invalid entry
                         }
                     }
 
@@ -326,6 +334,7 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
 
         override fun onBindViewHolder(holder: EntryHolder, position: Int) {
             val entry = entries[position]
+            /* Account for empty names */
             if (entry.Name == "") {
                 entry.Name = "New Entry"
             }
@@ -358,7 +367,7 @@ class ReceiptDetailFragment : Fragment(), DatePickerFragment.Callbacks {
     }
 
     override fun onDateSelected(date: Date) {
-        dateButton.setText(date.toString())
+        dateButton.setText(formatDate(date).toString())
         myReceipt?.Date = date
 
     }

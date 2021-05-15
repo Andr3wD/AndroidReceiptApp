@@ -8,12 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.lifecycle.MutableLiveData
 import java.util.*
 
 
@@ -108,14 +106,6 @@ class ReceiptListFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return when (item.itemId) {
-//            R.id.new_receipt -> {
-//                val receipt = Receipt()
-//                receiptListViewModel.addReceipt(receipt)
-//                callbacks?.onReceiptSelected((receipt.ReceiptID))
-//                true
-//            }
-//            else -> return super.onOptionsItemSelected(item)
         val fragment = ReceiptDataEntryFragment.newInstance()
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container,fragment)?.addToBackStack("receipt-list-fragment")?.commit()
@@ -126,7 +116,8 @@ class ReceiptListFragment : Fragment() {
         receiptRecyclerView.adapter = adapter
     }
 
-    private fun formatCrimeDate(d: Date) : CharSequence? {
+    /* Method used to format the date */
+    private fun formatDate(d: Date) : CharSequence? {
         return android.text.format.DateFormat.format("EEEE, MMM dd, yyyy", d)
     }
 
@@ -149,7 +140,7 @@ class ReceiptListFragment : Fragment() {
         fun bind(receipt: Receipt) {
             this.receipt = receipt
             titleTextView.text = this.receipt.Title
-            dateTextView.text = formatCrimeDate(this.receipt.Date)
+            dateTextView.text = formatDate(this.receipt.Date)
             totalTextView.text = "$%.2f".format(this.receipt.TotalSpent)
             // Set icon based on store
             when (this.receipt.Store.toLowerCase()) {

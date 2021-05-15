@@ -26,9 +26,9 @@ private const val REQUEST_PHOTO = 2
 
 class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
 
+    /* Aspects that will mostly be sourced from the layout */
     private lateinit var cameraButton: ImageButton
     private lateinit var photoButton: ImageButton
-    private lateinit var cameraImageDisplay: ImageView
     private lateinit var cameraImage: ImageView
     private lateinit var saveEntryButton: Button
     private lateinit var nickNameET: EditText
@@ -36,15 +36,10 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
     private lateinit var totalSpentET: EditText
     private lateinit var dateButton: Button
     private lateinit var purchaseDate: Date
-    private var filesDir = context?.applicationContext?.filesDir
-    private lateinit var photoUri: Uri
 
     private val receiptDataEntryViewModel: ReceiptDataEntryViewModel by lazy {
         ViewModelProviders.of(requireActivity()).get(ReceiptDataEntryViewModel::class.java)
     }
-
-
-    private lateinit var photoFile: File
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,11 +48,6 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_data_entry, container, false)
         Log.d("dataEntryFrag","onCreateView called")
-
-        photoFile = File("temp.jpg")
-        photoUri = FileProvider.getUriForFile(requireActivity(),
-            "com.bignerdranch.android.androidreceiptapp.fileprovider",
-            photoFile)
 
         nickNameET = view.findViewById(R.id.receipt_nickname) as EditText
         storeNameET = view.findViewById(R.id.receipt_store_name) as EditText
@@ -68,10 +58,6 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         purchaseDate = receiptDataEntryViewModel.dateFound
         dateButton.setText(purchaseDate.toString())
         totalSpentET.setText(receiptDataEntryViewModel.maxCostFound.toString())
-
-
-        cameraImage.setImageURI(photoUri)
-        Toast.makeText(context,photoUri.toString(),Toast.LENGTH_SHORT).show()
 
         var receiptRepo = ReceiptRepository.get()
 
@@ -85,39 +71,7 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
                 ?.replace(R.id.fragment_container,fragment)?.addToBackStack("camera-fragment")?.commit()
         }
 
-        photoButton.apply {
-            val packageManager: PackageManager = requireActivity().packageManager
-
-            val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            val resolvedActivity: ResolveInfo? =
-                packageManager.resolveActivity(captureImage,
-                    PackageManager.MATCH_DEFAULT_ONLY)
-            if (resolvedActivity == null) {
-                isEnabled = false
-            }
-
-            setOnClickListener {
-                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-
-                val cameraActivities: List<ResolveInfo> =
-                    packageManager.queryIntentActivities(captureImage,
-                        PackageManager.MATCH_DEFAULT_ONLY)
-
-                for (cameraActivity in cameraActivities) {
-                    requireActivity().grantUriPermission(
-                        cameraActivity.activityInfo.packageName,
-                        photoUri,
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    )
-                }
-
-                startActivityForResult(captureImage, REQUEST_PHOTO)
-                cameraImage.setImageURI(photoUri)
-                print(photoUri)
-            }
-        }
-
-
+        /* Save the entry and check for errors*/
         saveEntryButton.setOnClickListener {
             if (storeNameET.text.toString().length <= 0 ||
                 nickNameET.text.toString().length <= 0 ||
@@ -153,7 +107,7 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         Log.d("dataEntryFrag", "resuming")
         purchaseDate = receiptDataEntryViewModel.dateFound
 
-        dateButton.setText(purchaseDate.toString())
+        dateButton.setText(formatDate(purchaseDate).toString())
         totalSpentET.setText(receiptDataEntryViewModel.maxCostFound.toString())
         storeNameET.setText(receiptDataEntryViewModel.storeNameGuess)
         receiptDataEntryViewModel.clearMemory()
@@ -170,10 +124,16 @@ class ReceiptDataEntryFragment : Fragment(), DatePickerFragment.Callbacks {
         }
     }
 
+    /* method for datefragment */
     override fun onDateSelected(date: Date) {
-        dateButton.setText(date.toString())
+        dateButton.setText(formatDate(date).toString())
         purchaseDate = date
 
+    }
+
+    /* Method used to format the date */
+    private fun formatDate(d: Date) : CharSequence? {
+        return android.text.format.DateFormat.format("EEEE, MMM dd, yyyy", d)
     }
 
     companion object {
